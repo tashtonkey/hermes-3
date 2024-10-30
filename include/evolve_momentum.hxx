@@ -38,8 +38,10 @@ private:
   Field3D NV_err;       ///< Difference from momentum as input from solver
   Field3D NV_solver;    ///< Momentum as calculated in the solver
   Field3D V;            ///< Species parallel velocity
-
+ 
   Field3D momentum_source; ///< From other components. Stored for diagnostic output
+
+  Field3D dndt; /// This is the calcualted dndt used in A-parallel calculations of the momentum
 
   bool bndry_flux;      // Allow flows through boundaries?
   bool poloidal_flows;  // Include ExB flow in Y direction?

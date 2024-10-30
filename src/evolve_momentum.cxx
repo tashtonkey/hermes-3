@@ -140,7 +140,7 @@ void EvolveMomentum::finally(const Options &state) {
         Field3D dummy;
         
         // This is Z * Apar * dn/dt, keeping just leading order terms
-        Field3D dndt = density_source
+        dndt = density_source
           - FV::Div_par_mod<hermes::Limiter>(N, V, fastest_wave, dummy)
           - Div_n_bxGrad_f_B_XPPM(N, phi, bndry_flux, poloidal_flows, true)
           ;
@@ -285,6 +285,17 @@ void EvolveMomentum::outputVars(Options &state) {
                     {"species", name},
                     {"source", "evolve_momentum"}});
 
+    // make sure there is only the partial density evolution saved if Apar is on:
+    if (state["fields"].isSet("Apar")) { 
+      set_with_attrs(state[std::string("ddt(N" + name + std::string(")_part"))], dndt,
+                    {{"time_dimension", "t"},
+                      {"units", "m^-3 s^-1"},
+                      {"conversion", Nnorm * Omega_ci},
+                      {"standard_name", "partial particle source"},
+                      {"long_name", name + " partial particle source used in evolve_momentum"},
+                      {"species", name},
+                      {"source", "evolve_momentum"}});
+                }
     // If fluxes have been set then add them to the output
     auto rho_s0 = get<BoutReal>(state["rho_s0"]);
 
